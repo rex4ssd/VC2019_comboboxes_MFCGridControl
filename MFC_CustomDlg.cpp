@@ -62,13 +62,13 @@ CMFCCustomDlg::CMFCCustomDlg(CWnd* pParent /*=nullptr*/)
 	//{{AFX_DATA_INIT(CGridCtrlDemoDlg)
 	m_nFixCols = 1;
 	m_nFixRows = 1;
-	m_nCols = 8;
+	m_nCols = 2;
 	m_nRows = 20;
 	m_bEditable = FALSE;
 	m_bHorzLines = FALSE;
 	m_bVertLines = FALSE;
 	m_bListMode = TRUE;
-	m_bHeaderSort = FALSE;
+	m_bHeaderSort = TRUE;
 	m_bSingleSelMode = TRUE;
 	m_bSingleColSelMode = TRUE;
 	m_bSelectable = FALSE;
@@ -437,10 +437,10 @@ void CMFCCustomDlg::OnCellNormal()
     m_Grid.SetItemState(1,1, m_Grid.GetItemState(1,1) & ~GVIS_READONLY);
     m_Grid.Invalidate();
 
-	m_Grid.SetCellType(1, 3, RUNTIME_CLASS(CGridCell));
-	m_Grid.SetItemText(1, 3, _T("3"));
-	m_Grid.SetItemState(1, 3, m_Grid.GetItemState(1, 3) & ~GVIS_READONLY);
-	m_Grid.Invalidate();
+	//m_Grid.SetCellType(1, 3, RUNTIME_CLASS(CGridCell));
+	//m_Grid.SetItemText(1, 3, _T("3"));
+	//m_Grid.SetItemState(1, 3, m_Grid.GetItemState(1, 3) & ~GVIS_READONLY);
+	//m_Grid.Invalidate();
 }
 
 void CMFCCustomDlg::OnCellReadonly() 
@@ -528,13 +528,14 @@ void CMFCCustomDlg::OnVirtualMode()
     m_bHeaderSort = m_Grid.GetHeaderSort();
     m_bEditable = m_Grid.IsEditable();
 
+	//m_bVirtualMode = true;
     if (m_bVirtualMode)
     {
         m_Grid.SetCallbackFunc(m_bCallback? GridCallback : NULL, 0);
 
         m_nFixCols = 1;
 	    m_nFixRows = 1;
-	    m_nCols = 100;
+	    m_nCols = 2;
 	    m_nRows = 100000;
 
 	    TRY {
@@ -552,9 +553,10 @@ void CMFCCustomDlg::OnVirtualMode()
     }
     else
     {
+		//go this way, R
         m_nFixCols = 1;
 	    m_nFixRows = 1;
-	    m_nCols = 8;
+	    m_nCols = 2;
 	    m_nRows = 20;
 
 	    m_Grid.SetEditable(m_bEditable);
@@ -596,16 +598,16 @@ void CMFCCustomDlg::OnVirtualMode()
 
     			if (rand() % 10 == 1)
 	    		{
-                    COLORREF clr = RGB(rand()%128 + 128, rand()%128 + 128, rand()%128 + 128);
-                    Item.crBkClr = clr;             // or - m_Grid.SetItemBkColour(row, col, clr);
-                    Item.crFgClr = RGB(255,0,0);    // or - m_Grid.SetItemFgColour(row, col, RGB(255,0,0));				    
-                    Item.mask    |= (GVIF_BKCLR|GVIF_FGCLR);
+                    // COLORREF clr = RGB(rand()%128 + 128, rand()%128 + 128, rand()%128 + 128);
+                    // Item.crBkClr = clr;             // or - m_Grid.SetItemBkColour(row, col, clr);
+                    // Item.crFgClr = RGB(255,0,0);    // or - m_Grid.SetItemFgColour(row, col, RGB(255,0,0));				    
+                    // Item.mask    |= (GVIF_BKCLR|GVIF_FGCLR);
     			}
 
     			if (col < m_Grid.GetFixedColumnCount())
                 {
-                    Item.iImage = rand()%m_ImageList.GetImageCount();
-                    Item.mask  |= (GVIF_IMAGE);
+                   // Item.iImage = rand()%m_ImageList.GetImageCount();
+                    //Item.mask  |= (GVIF_IMAGE);
                 }
 
         		m_Grid.SetItem(&Item);
@@ -762,16 +764,16 @@ void CMFCCustomDlg::OnBnClickedButton1()
 	pCell->SetOptions(options);
 
 
-	if (!m_Grid.SetCellType(1, 3, RUNTIME_CLASS(CGridCellCombo)))
+	if (!m_Grid.SetCellType(3, 1, RUNTIME_CLASS(CGridCellCombo)))
 		return;
 
-	m_Grid.SetItemText(1, 3, _T("www.codeproject.com"));
+	m_Grid.SetItemText(3, 1, _T("www.codeproject.com"));
 
 	 options.RemoveAll();
 	options.Add(_T("Optiona 1"));
 	options.Add(_T("Optionb 2"));
 
-	pCell = (CGridCellCombo*)m_Grid.GetCell(1, 3);
+	pCell = (CGridCellCombo*)m_Grid.GetCell(3, 1);
 	pCell->SetOptions(options);
 }
 
