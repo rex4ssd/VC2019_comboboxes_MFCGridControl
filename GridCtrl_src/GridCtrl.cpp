@@ -1957,7 +1957,7 @@ void CGridCtrl::SetSelectedRange(int nMinRow, int nMinCol, int nMaxRow, int nMax
             {
                 DWORD key;
                 CCellID cell;
-                m_PrevSelectedCellMap.GetNextAssoc((POSITION&)pos, key, (CCellID&)cell);
+                m_PrevSelectedCellMap.GetNextAssoc((POSITION&)pos, key, (CCellID&)cell); //rex
 
                 if (!IsValid(cell))
                     continue;
