@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "GridCtrl_src/GridCtrl.h"
 
 
 // CMFCCustomDlg dialog
@@ -12,6 +13,7 @@ class CMFCCustomDlg : public CDialogEx
 public:
 	CMFCCustomDlg(CWnd* pParent = nullptr);	// standard constructor
 
+	CGridCtrl m_Grid;
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFC_CUSTOM_DIALOG };

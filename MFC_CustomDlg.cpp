@@ -59,6 +59,7 @@ CMFCCustomDlg::CMFCCustomDlg(CWnd* pParent /*=nullptr*/)
 void CMFCCustomDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_GRID, m_Grid);             // associate the grid window with a C++ object
 }
 
 BEGIN_MESSAGE_MAP(CMFCCustomDlg, CDialogEx)
