@@ -249,32 +249,32 @@ CGridCtrl::CGridCtrl(int nRows, int nCols, int nFixedRows, int nFixedCols)
     m_bEditable           = TRUE;
     m_bListMode           = FALSE;
     m_bSingleRowSelection = FALSE;
-    m_bSingleColSelection = FALSE;
+    m_bSingleColSelection = TRUE;
     m_bMouseButtonDown    = FALSE;
     m_bAllowDraw          = TRUE;       // allow draw updates
-    m_bEnableSelection    = TRUE;
-    m_bFixedColumnSelection = TRUE;
-    m_bFixedRowSelection  = TRUE;
-    m_bAllowRowResize     = TRUE;
-    m_bAllowColumnResize  = TRUE;
+    m_bEnableSelection    = FALSE;
+    m_bFixedColumnSelection = FALSE;
+    m_bFixedRowSelection  = FALSE;
+    m_bAllowRowResize     = FALSE;
+    m_bAllowColumnResize  = FALSE;
     m_bSortOnClick        = FALSE;      // Sort on header row click
-    m_bHandleTabKey       = TRUE;
+    m_bHandleTabKey       = FALSE;
 #ifdef _WIN32_WCE
     m_bDoubleBuffer       = FALSE;      // Use double buffering to avoid flicker?
 #else
     m_bDoubleBuffer       = TRUE;       // Use double buffering to avoid flicker?
 #endif
-    m_bTitleTips          = TRUE;       // show cell title tips
+    m_bTitleTips          = FALSE;       // show cell title tips
 
     m_bWysiwygPrinting    = FALSE;      // use size-to-width printing
 
-    m_bHiddenColUnhide    = TRUE;       // 0-width columns can be expanded via mouse
-    m_bHiddenRowUnhide    = TRUE;       // 0-Height rows can be expanded via mouse
+    m_bHiddenColUnhide    = FALSE;       // 0-width columns can be expanded via mouse
+    m_bHiddenRowUnhide    = FALSE;       // 0-Height rows can be expanded via mouse
 
-    m_bAllowColHide       = TRUE;       // Columns can be contracted to 0-width via mouse
-    m_bAllowRowHide       = TRUE;       // Rows can be contracted to 0-height via mouse
+    m_bAllowColHide       = FALSE;       // Columns can be contracted to 0-width via mouse
+    m_bAllowRowHide       = FALSE;       // Rows can be contracted to 0-height via mouse
 
-    m_bAscending          = TRUE;       // sorting stuff
+    m_bAscending          = FALSE;       // sorting stuff
     m_nSortColumn         = -1;
     m_nAutoSizeColumnStyle = GVS_BOTH;  // Autosize grid using header and data info
 
@@ -285,8 +285,8 @@ CGridCtrl::CGridCtrl(int nRows, int nCols, int nFixedRows, int nFixedCols)
                                         // resizing to be possible
     m_pImageList          = NULL;       // Images in the grid
     m_bAllowDragAndDrop   = FALSE;      // for drag and drop - EFW - off by default
-    m_bTrackFocusCell     = TRUE;       // Track Focus cell?
-    m_bFrameFocus         = TRUE;       // Frame the selected cell?
+    m_bTrackFocusCell     = FALSE;       // Track Focus cell?
+    m_bFrameFocus         = FALSE;       // Frame the selected cell?
 
     m_pRtcDefault = RUNTIME_CLASS(CGridCell);
 
@@ -437,6 +437,8 @@ void CGridCtrl::SetupDefaultCells()
     m_cellFixedColDef.SetGrid(this);        // Cell for fixed columns
     m_cellFixedRowDef.SetGrid(this);        // Cell for fixed rows
     m_cellFixedRowColDef.SetGrid(this);     // Cell for area overlapped by fixed columns/rows
+
+	//m_cr3DFace = ::GetSysColor(COLOR_3DSHADOW);
 
     m_cellDefault.SetTextClr(m_crWindowText);   
     m_cellDefault.SetBackClr(m_crWindowColour); 
@@ -1841,9 +1843,11 @@ CCellID CGridCtrl::SetFocusCell(CCellID cell)
             GetItemState(idPrev.row, idPrev.col) & ~GVIS_FOCUSED);
         RedrawCell(idPrev); // comment to reduce flicker
 
+		//R, Un select item
         if (GetTrackFocusCell() && idPrev.col != m_idCurrentCell.col)
             for (int row = 0; row < m_nFixedRows; row++)
                 RedrawCell(row, idPrev.col);
+		//R, Select New Item
         if (GetTrackFocusCell() && idPrev.row != m_idCurrentCell.row)
             for (int col = 0; col < m_nFixedCols; col++)
                 RedrawCell(idPrev.row, col);
@@ -1856,12 +1860,18 @@ CCellID CGridCtrl::SetFocusCell(CCellID cell)
 
         RedrawCell(m_idCurrentCell); // comment to reduce flicker
 
-        if (GetTrackFocusCell() && idPrev.col != m_idCurrentCell.col)
-            for (int row = 0; row < m_nFixedRows; row++)
-                RedrawCell(row, m_idCurrentCell.col);
-        if (GetTrackFocusCell() && idPrev.row != m_idCurrentCell.row)
-            for (int col = 0; col < m_nFixedCols; col++)
-                RedrawCell(m_idCurrentCell.row, col);
+
+		//R, Disable the following Event
+		//R, Set First Row (Fixed Row) Selected
+        //if (GetTrackFocusCell() && idPrev.col != m_idCurrentCell.col)
+        //    for (int row = 0; row < m_nFixedRows; row++)
+        //        RedrawCell(row, m_idCurrentCell.col);
+		
+		//R, Set First column (Fixed column) Selected
+        //if (GetTrackFocusCell() && idPrev.row != m_idCurrentCell.row)
+        //    for (int col = 0; col < m_nFixedCols; col++)
+        //        RedrawCell(m_idCurrentCell.row, col);
+		
 
         SendMessageToParent(m_idCurrentCell.row, m_idCurrentCell.col, GVN_SELCHANGED);
 
@@ -1965,7 +1975,9 @@ void CGridCtrl::SetSelectedRange(int nMinRow, int nMinCol, int nMaxRow, int nMax
                 int nState = GetItemState(cell.row, cell.col);
 
                 // Set state as Selected. This will add the cell to m_SelectedCellMap
-                SetItemState(cell.row, cell.col, nState | GVIS_SELECTED);
+                //R, one click, not this one
+                SetItemState(cell.row, cell.col, nState | GVIS_SELECTED); 
+				
 
                 // Redraw (immediately or at leisure)
                 if (bForceRepaint && pDC)
@@ -1995,11 +2007,15 @@ void CGridCtrl::SetSelectedRange(int nMinRow, int nMinCol, int nMaxRow, int nMax
 
                 // Set the selected state. This will add/remove the cell to m_SelectedCellMap
                 if (bSelectCells)
-                    SetItemState(row, col, nState | GVIS_SELECTED);
+                {
+                	//R, set back color on column 1
+                    SetItemState(row, col, nState | GVIS_SELECTED); 
+                }
                 else
                     SetItemState(row, col, GetItemState(row, col) & ~GVIS_SELECTED);
 
                 // Redraw (immediately or at leisure)
+				//R, Redraw after SetItem State
                 if (bForceRepaint && pDC)
                     RedrawCell(row, col, pDC);
                 else
@@ -2088,7 +2104,12 @@ void CGridCtrl::SelectCells(CCellID currentCell,
     // Prevent unnecessary redraws
     //if (currentCell == m_LeftClickDownCell)  return;
     //else if (currentCell == m_idCurrentCell) return;
-
+	
+	//R, Disable select many rows
+	// m_SelectionStartCell.row = currentCell.row;
+	// m_SelectionStartCell.col = currentCell.col;
+	//R, 
+	
     SetSelectedRange(min(m_SelectionStartCell.row, row),
                      min(m_SelectionStartCell.col, col),
                      max(m_SelectionStartCell.row, row),
@@ -2105,16 +2126,16 @@ void CGridCtrl::OnSelecting(const CCellID& currentCell)
     switch (m_MouseMode)
     {
     case MOUSE_SELECT_ALL:
-        SelectAllCells();
+        //SelectAllCells();
         break;
     case MOUSE_SELECT_COL:
-        SelectColumns(currentCell, FALSE);
+       // SelectColumns(currentCell, FALSE);
         break;
     case MOUSE_SELECT_ROW:
-        SelectRows(currentCell, FALSE);
+        //SelectRows(currentCell, FALSE);
         break;
     case MOUSE_SELECT_CELLS:
-        SelectCells(currentCell, FALSE);
+       SelectCells(currentCell, FALSE);
         break;
     }
 
@@ -4310,6 +4331,8 @@ int CGridCtrl::GetItemImage(int nRow, int nCol) const
 
 BOOL CGridCtrl::SetItemState(int nRow, int nCol, UINT state)
 {
+	TRACE(" CGridCtrl::SetItemState nRow = %d, nCol = %d\n", nRow, nCol);
+
     BOOL bSelected = IsCellSelected(nRow, nCol);
 
     // If the cell is being unselected, remove it from the selected list
@@ -5330,6 +5353,7 @@ void CGridCtrl::OnMouseMove(UINT /*nFlags*/, CPoint point)
 
 CPoint CGridCtrl::GetPointClicked(int nRow, int nCol, const CPoint& point)
 {
+    TRACE0("CGridCtrl::GetPointClicked\n");
     CPoint PointCellOrigin;
     if( !GetCellOrigin( nRow, nCol, &PointCellOrigin)  )
         return CPoint( 0, 0);
@@ -5442,6 +5466,7 @@ void CGridCtrl::OnLButtonDblClk(UINT nFlags, CPoint point)
 
 void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 {
+    TRACE0("CGridCtrl::OnLButtonDown\n");
 #ifdef GRIDCONTROL_USE_TITLETIPS
     // EFW - Bug Fix
     m_TitleTip.Hide();  // hide any titletips
@@ -5494,8 +5519,11 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
         if (nFlags & MK_CONTROL)
         {
             SetFocusCell(m_LeftClickDownCell);
-            if (GetListMode())
-                SelectRows(m_LeftClickDownCell, TRUE, FALSE);
+			if (GetListMode()) {
+				//R, Disable Select Rows
+				SelectRows(m_LeftClickDownCell, TRUE, FALSE);
+			}
+                
             else
                 SelectCells(m_LeftClickDownCell, TRUE, FALSE);
             return;
@@ -5701,9 +5729,15 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
         }
         
         if (m_LeftClickDownCell.row < GetFixedRowCount())
+        {
+         // R, Disable Sort Func
             OnFixedRowClick(m_LeftClickDownCell);
+        }
         else if (m_LeftClickDownCell.col < GetFixedColumnCount())
+        {
+        	//R, Disable Sorting Func
             OnFixedColumnClick(m_LeftClickDownCell);
+        }
         else
         {
             m_MouseMode = m_bListMode? MOUSE_SELECT_ROW : MOUSE_SELECT_CELLS;
@@ -5717,7 +5751,7 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 {
-    // TRACE0("CGridCtrl::OnLButtonUp\n");
+    TRACE0("CGridCtrl::OnLButtonUp\n");
 
     CWnd::OnLButtonUp(nFlags, point);
 
@@ -5839,6 +5873,7 @@ void CGridCtrl::OnLButtonUp(UINT nFlags, CPoint point)
 // menu can be shown without deriving a new grid class.
 void CGridCtrl::OnRButtonUp(UINT nFlags, CPoint point)
 {
+    TRACE0("CGridCtrl::OnRButtonUp\n");
     CCellID FocusCell;
 
     CWnd::OnRButtonUp(nFlags, point);
@@ -5906,6 +5941,7 @@ void CGridCtrl::GetPrintMarginInfo(int &nHeaderHeight, int &nFooterHeight,
 
 void CGridCtrl::Print()
 {
+    TRACE0("CGridCtrl::Print\n");
     CDC dc;
     CPrintDialog printDlg(FALSE);
 
@@ -5965,6 +6001,7 @@ void CGridCtrl::Print()
 // new print margins and a few other adjustments.
 void CGridCtrl::OnBeginPrinting(CDC *pDC, CPrintInfo *pInfo)
 {
+    TRACE0("CGridCtrl::OnBeginPrinting\n");
     // OnBeginPrinting() is called after the user has committed to
     // printing by OK'ing the Print dialog, and after the framework
     // has created a CDC object for the printer or the preview view.

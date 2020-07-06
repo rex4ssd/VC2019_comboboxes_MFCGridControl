@@ -68,7 +68,7 @@ CMFCCustomDlg::CMFCCustomDlg(CWnd* pParent /*=nullptr*/)
 	m_bHorzLines = FALSE;
 	m_bVertLines = FALSE;
 	m_bListMode = TRUE;
-	m_bHeaderSort = TRUE;
+	m_bHeaderSort = FALSE;
 	m_bSingleSelMode = TRUE;
 	m_bSingleColSelMode = TRUE;
 	m_bSelectable = FALSE;
@@ -96,7 +96,8 @@ BEGIN_MESSAGE_MAP(CMFCCustomDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCCustomDlg::OnBnClickedButton1)
-	ON_BN_CLICKED(IDABORT, &CMFCCustomDlg::OnBnClickedAbort)
+	ON_BN_CLICKED(IDC_BUTTON2, &CMFCCustomDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CMFCCustomDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -140,8 +141,8 @@ BOOL CMFCCustomDlg::OnInitDialog()
 	m_ImageList.Create(MAKEINTRESOURCE(IDB_IMAGES), 16, 1, RGB(255,255,255));
 	m_Grid.SetImageList(&m_ImageList);
 
-	m_Grid.EnableDragAndDrop(TRUE);
-	m_Grid.GetDefaultCell(FALSE, FALSE)->SetBackClr(RGB(0xFF, 0xFF, 0xE0));
+	m_Grid.EnableDragAndDrop(FALSE);
+	m_Grid.GetDefaultCell(TRUE, TRUE)->SetBackClr(RGB(0xFF, 0xFF, 0xE0));
 
     OnEditable();
     OnVirtualMode();    // Sets the grid mode, fills the grid
@@ -149,7 +150,7 @@ BOOL CMFCCustomDlg::OnInitDialog()
     //OnCellReadonly();
     //OnItalics();
     //OnTitletips();
-    OnTrackfocus();
+    //OnTrackfocus();
     OnFramefocus();
     OnRowResize();
     OnColResize();
@@ -157,20 +158,27 @@ BOOL CMFCCustomDlg::OnInitDialog()
     OnSingleColMode();
     OnVertGridLines();
     OnHorzGridLines();
-    OnAllowSelection();
+
+    //R, Disable Select multi line
+  //  OnAllowSelection();
     OnCallbackFunction();
     OnVertical();
-    OnHeaderSort();
+    
+    //R, Disable Sorting func
+//    OnHeaderSort();
 
 
-    m_Grid.SetFixedColumnSelection(TRUE);
-    m_Grid.SetFixedRowSelection(TRUE);
+    m_Grid.SetFixedColumnSelection(FALSE);
+    m_Grid.SetFixedRowSelection(FALSE);
 
+	//R, Set ColumnWidth
+	m_Grid.SetColumnWidth(0, 100);
+	m_Grid.SetColumnWidth(1, 350);
     UpdateMenuUI();
 
-    m_Grid.AutoSize();
+    //m_Grid.AutoSize();
 
-    m_Grid.SetSortColumn(100);
+    //m_Grid.SetSortColumn(100);
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -342,11 +350,11 @@ BOOL CALLBACK EnumProc(HWND hwnd, LPARAM lParam)
 	}
 	else 
 	{
-        if (pWnd->GetDlgCtrlID() == IDC_SIZEBOX)
-       		pWnd->MoveWindow(rect.left+pTranslate->cx, rect.top+pTranslate->cy, 
-           					 rect.Width(), rect.Height(), FALSE);
-        else
-   		    pWnd->MoveWindow(rect.left+pTranslate->cx, rect.top, rect.Width(), rect.Height(), FALSE);
+        // if (pWnd->GetDlgCtrlID() == IDC_SIZEBOX)
+       	// 	pWnd->MoveWindow(rect.left+pTranslate->cx, rect.top+pTranslate->cy, 
+        //    					 rect.Width(), rect.Height(), FALSE);
+        // else
+   		   //  pWnd->MoveWindow(rect.left+pTranslate->cx, rect.top, rect.Width(), rect.Height(), FALSE);
 	}
 	pDlg->Invalidate();
 
@@ -525,7 +533,7 @@ void CMFCCustomDlg::OnVirtualMode()
     m_bVirtualMode = !m_bVirtualMode;
 	m_Grid.SetVirtualMode(m_bVirtualMode);
 
-    m_bHeaderSort = m_Grid.GetHeaderSort();
+    //m_bHeaderSort = m_Grid.GetHeaderSort();
     m_bEditable = m_Grid.IsEditable();
 
 	//m_bVirtualMode = true;
@@ -553,14 +561,14 @@ void CMFCCustomDlg::OnVirtualMode()
     }
     else
     {
-		//go this way, R
+		//R, go this way
         m_nFixCols = 1;
 	    m_nFixRows = 1;
 	    m_nCols = 2;
 	    m_nRows = 20;
 
 	    m_Grid.SetEditable(m_bEditable);
-        m_Grid.SetAutoSizeStyle();
+        //m_Grid.SetAutoSizeStyle();
 
 	    TRY {
 		    m_Grid.SetRowCount(m_nRows);
@@ -588,27 +596,34 @@ void CMFCCustomDlg::OnVirtualMode()
 	    		Item.row = row;
 		    	Item.col = col;
 
-			    if (row < m_nFixRows)
-                    str.Format(_T("Column %d"),col);
+			    if (row < m_nFixRows){
+			    	//R, Skip first Column
+			    	if(col!=0)
+                    	str.Format(_T("Rex Column %d"),col);
+			    }
                 else if (col < m_nFixCols) 
-                    str.Format(_T("Row %d"), row);
+                    str.Format(_T("Rex Row %d"), row);
                 else 
 				    str.Format(_T("%d"),row*col);
                 Item.strText = str;
 
+
+				//R, Disable some effect
+				/*
     			if (rand() % 10 == 1)
 	    		{
-                    // COLORREF clr = RGB(rand()%128 + 128, rand()%128 + 128, rand()%128 + 128);
-                    // Item.crBkClr = clr;             // or - m_Grid.SetItemBkColour(row, col, clr);
-                    // Item.crFgClr = RGB(255,0,0);    // or - m_Grid.SetItemFgColour(row, col, RGB(255,0,0));				    
-                    // Item.mask    |= (GVIF_BKCLR|GVIF_FGCLR);
+                    COLORREF clr = RGB(rand()%128 + 128, rand()%128 + 128, rand()%128 + 128);
+                    Item.crBkClr = clr;             // or - m_Grid.SetItemBkColour(row, col, clr);
+                    Item.crFgClr = RGB(255,0,0);    // or - m_Grid.SetItemFgColour(row, col, RGB(255,0,0));				    
+                    Item.mask    |= (GVIF_BKCLR|GVIF_FGCLR);
     			}
 
     			if (col < m_Grid.GetFixedColumnCount())
-                {
-                   // Item.iImage = rand()%m_ImageList.GetImageCount();
-                    //Item.mask  |= (GVIF_IMAGE);
-                }
+               	{
+                   Item.iImage = rand()%m_ImageList.GetImageCount();
+                    Item.mask  |= (GVIF_IMAGE);
+               	}
+               	*/
 
         		m_Grid.SetItem(&Item);
 	    	}
@@ -616,7 +631,7 @@ void CMFCCustomDlg::OnVirtualMode()
     }
 
     //m_Grid.GetDefaultCell(FALSE,FALSE)->SetFormat(DT_RIGHT|DT_VCENTER|DT_SINGLELINE|DT_NOPREFIX|DT_END_ELLIPSIS);
-    //m_Grid.GetDefaultCell(TRUE, FALSE)->SetFormat(DT_RIGHT|DT_VCENTER|DT_SINGLELINE|DT_NOPREFIX|DT_END_ELLIPSIS);
+    m_Grid.GetDefaultCell(TRUE, TRUE)->SetFormat(DT_RIGHT|DT_VCENTER|DT_SINGLELINE|DT_NOPREFIX|DT_END_ELLIPSIS);
 
     // Having weird Autosize problems with CE 2.11 - possibly just an emulation problem
 #if !defined(_WIN32_WCE) || (_WIN32_WCE < 211)
@@ -727,7 +742,7 @@ void CMFCCustomDlg::OnVertical()
     }
 
     // Set the fixed row defaults as this new font
-    m_Grid.GetDefaultCell(TRUE, FALSE)->SetFont(&lf);
+    m_Grid.GetDefaultCell(TRUE, TRUE)->SetFont(&lf);
 
     // Set cell 1,1 as the more normal font so URL cells look OK
     lf.lfEscapement = 0;
@@ -775,10 +790,54 @@ void CMFCCustomDlg::OnBnClickedButton1()
 
 	pCell = (CGridCellCombo*)m_Grid.GetCell(3, 1);
 	pCell->SetOptions(options);
+	CString strTempText = pCell->GetText();
+	TRACE("pCell->GetText() = %s\n", pCell->GetText());
 }
 
 
-void CMFCCustomDlg::OnBnClickedAbort()
+
+void CMFCCustomDlg::OnBnClickedButton2()
 {
 	// TODO: Add your control notification handler code here
+}
+
+
+void CMFCCustomDlg::OnBnClickedButton3()
+{
+	// TODO: Add your control notification handler code here
+
+		// fill rows/cols with text
+	for (int row = 0; row < m_Grid.GetRowCount(); row++)
+	{
+		for (int col = 0; col < m_Grid.GetColumnCount(); col++)
+		{
+			CString str;
+
+			GV_ITEM Item;
+
+			Item.mask = GVIF_TEXT;
+			Item.row = row;
+			Item.col = col;
+
+			if (row < m_nFixRows) {
+				//R, Skip first Column
+				if (col != 0)
+					str.Format(_T("RE Column %d"), col);
+			}
+			else if (col < m_nFixCols)
+				str.Format(_T("RE Row %d"), row);
+			else
+				str.Format(_T("RE %d"), row * col);
+			Item.strText = str;
+
+
+			m_Grid.SetItem(&Item);
+		}
+	}
+
+	m_Grid.GetDefaultCell(TRUE, TRUE)->SetFormat(DT_RIGHT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS);
+	
+	UpdateMenuUI();
+
+	UpdateData(FALSE);
 }
