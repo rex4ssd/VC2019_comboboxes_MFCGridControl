@@ -806,38 +806,14 @@ void CMFCCustomDlg::OnBnClickedButton3()
 {
 	// TODO: Add your control notification handler code here
 
-		// fill rows/cols with text
-	for (int row = 0; row < m_Grid.GetRowCount(); row++)
+	for (int row = 1; row < m_Grid.GetRowCount(); row++)
 	{
-		for (int col = 0; col < m_Grid.GetColumnCount(); col++)
-		{
-			CString str;
 
-			GV_ITEM Item;
+		CString str;
 
-			Item.mask = GVIF_TEXT;
-			Item.row = row;
-			Item.col = col;
-
-			if (row < m_nFixRows) {
-				//R, Skip first Column
-				if (col != 0)
-					str.Format(_T("RE Column %d"), col);
-			}
-			else if (col < m_nFixCols)
-				str.Format(_T("RE Row %d"), row);
-			else
-				str.Format(_T("RE %d"), row * col);
-			Item.strText = str;
-
-
-			m_Grid.SetItem(&Item);
-		}
+		str.Format(_T("RE %d"), row);
+		m_Grid.SetItemText(row, 1, str);
+		m_Grid.Refresh();
 	}
 
-	m_Grid.GetDefaultCell(TRUE, TRUE)->SetFormat(DT_RIGHT | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX | DT_END_ELLIPSIS);
-	
-	UpdateMenuUI();
-
-	UpdateData(FALSE);
 }
