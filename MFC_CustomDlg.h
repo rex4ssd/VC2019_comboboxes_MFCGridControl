@@ -7,6 +7,51 @@
 
 //#define _WIN32_WCE
 
+typedef struct _grid_info {
+	int id;
+	char title[20];
+	char value[50];
+	int option;
+}grid_info, *pGrid_info;
+
+struct f_grid_info { //find grid info
+	int id;
+
+	f_grid_info(int id) : id(id) {}
+	bool operator () (const grid_info& g) const
+	{
+		return g.id == id;
+	}
+};
+
+
+typedef struct _grid_option {
+	int id;
+	char item0[20];
+	char item1[20];
+	char item2[20];
+	char item3[20];
+	char item4[20];
+	char item5[20];
+	char item6[20];
+	char item7[20];
+	char item8[20];
+	char item9[20];
+
+}grid_option, *pGrid_option;
+
+
+struct f_grid_option { //find grid option
+	int id;
+
+	f_grid_option(int id) : id(id) {}
+	bool operator () (const grid_option& g) const
+	{
+		return g.id == id;
+	}
+};
+
+
 // CMFCCustomDlg dialog
 class CMFCCustomDlg : public CDialogEx
 {
@@ -113,4 +158,7 @@ public:
 	afx_msg void OnBnClickedButton1();
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
+	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedButton4();
+	afx_msg void OnBnClickedButton5();
 };

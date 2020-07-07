@@ -1,4 +1,4 @@
-
+﻿
 // MFC_CustomDlg.cpp : implementation file
 //
 
@@ -9,6 +9,12 @@
 #include "afxdialogex.h"
 #include "NewCellTypes/GridURLCell.h"
 #include "NewCellTypes/GridCellCombo.h"
+
+
+#include <algorithm>
+#include <vector>
+
+using namespace std;
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -98,6 +104,9 @@ BEGIN_MESSAGE_MAP(CMFCCustomDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCCustomDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFCCustomDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CMFCCustomDlg::OnBnClickedButton3)
+	ON_BN_CLICKED(IDOK, &CMFCCustomDlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDC_BUTTON4, &CMFCCustomDlg::OnBnClickedButton4)
+	ON_BN_CLICKED(IDC_BUTTON5, &CMFCCustomDlg::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 
@@ -795,25 +804,120 @@ void CMFCCustomDlg::OnBnClickedButton1()
 }
 
 
-
+//------------------------------------------------------------------------------------------------------
 void CMFCCustomDlg::OnBnClickedButton2()
 {
 	// TODO: Add your control notification handler code here
+	CString s1 = "";
+	for (int row = 1; row < m_Grid.GetRowCount(); row++)
+	{
+		CString str;
+		str.Format(_T("RE %d"), row);
+		str = m_Grid.GetItemText(row, 1);
+		s1 = s1 + str + "\n";
+	}
+	
+	CEdit* wEdit;
+	wEdit = (CEdit*)GetDlgItem(IDC_STATIC);
+	wEdit->SetWindowText(s1); //設定
+
 }
 
-
+//------------------------------------------------------------------------------------------------------
 void CMFCCustomDlg::OnBnClickedButton3()
 {
 	// TODO: Add your control notification handler code here
 
 	for (int row = 1; row < m_Grid.GetRowCount(); row++)
 	{
-
 		CString str;
-
 		str.Format(_T("RE %d"), row);
 		m_Grid.SetItemText(row, 1, str);
 		m_Grid.Refresh();
 	}
 
+}
+
+
+void CMFCCustomDlg::OnBnClickedOk()
+{
+	// TODO: Add your control notification handler code here
+	CDialogEx::OnOK();
+}
+
+
+vector<grid_info> vgis;
+void CMFCCustomDlg::OnBnClickedButton4()
+{
+	// TODO: Add your control notification handler code here
+
+	grid_info gi;
+	::ZeroMemory(&gi, sizeof(grid_info));
+
+	//init data 
+	//vector<grid_info> vgis;
+	for (int i = 0; i < 10; i++)
+	{
+		gi.id = i; //id 0~ max
+		sprintf(gi.title, "t_%03d", i);
+		gi.option = 1;
+		vgis.push_back(gi);
+	}
+
+	//find data by id
+	gi.id = 2;
+	std::vector< grid_info >::iterator it;
+	it = std::find_if(vgis.begin(), vgis.end(), f_grid_info(gi.id));
+
+	if (it != vgis.end()) {
+		//get it
+		TRACE("find data : id = %d, titile  = %s, option = %d\n", it->id, it->title, it->option);
+
+		//modify data
+		it->id = 77;
+		sprintf(it->title, "%s", "update77");
+		it->option = 77;
+
+		TRACE("after modify data : id = %d, titile  = %s, option = %d\n", it->id, it->title, it->option);
+		TRACE("Find nothing !!\n");
+	}
+
+
+	//find again
+	gi.id = 2;
+	//std::vector< grid_info >::iterator it;
+	it = std::find_if(vgis.begin(), vgis.end(), f_grid_info(gi.id));
+
+	if (it != vgis.end()) {
+		//get it
+		TRACE("find data : id = %d, titile  = %s, option = %d\n", it->id, it->title, it->option);
+
+		//modify data
+		it->id = 77;
+		sprintf(it->title, "%s", "update77");
+		it->option = 77;
+
+		TRACE("after modify data : id = %d, titile  = %s, option = %d\n", it->id, it->title, it->option);
+	}
+	else
+	{
+		TRACE("Find nothing !!\n");
+	}
+}
+
+
+void CMFCCustomDlg::OnBnClickedButton5()
+{
+	// TODO: Add your control notification handler code here
+	CString s = "";
+	std::vector< grid_info >::iterator it;
+	for (it = vgis.begin(); it != vgis.end(); it++)
+	{
+		s.Format("%sid = %d, title = %s, value = %d\n",
+			s, it->id, it->title, it->option);
+	}
+	 
+	CEdit* wEdit;
+	wEdit = (CEdit*)GetDlgItem(IDC_STATIC);
+	wEdit->SetWindowText(s); //設定
 }
