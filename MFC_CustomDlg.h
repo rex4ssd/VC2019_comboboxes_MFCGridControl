@@ -6,44 +6,67 @@
 #include "GridCtrl_src/GridCtrl.h"
 
 //#define _WIN32_WCE
+#define ITEM_LEN 20
 
-typedef struct _grid_info {
+
+struct _sz_v { 
+	char v[ITEM_LEN];//value
+};
+
+struct _int_v { //value
+	int v;//value 
+};
+
+typedef struct _grid_ini {
 	int id;
-	char title[20];
-	char value[50];
-	int option;
-}grid_info, *pGrid_info;
+	char title[ITEM_LEN];
+	int option; //0 = no sub item, 1 = exist sub item
+	int type;	//0 = char, 1 = int;
+	union {		//default value
+		struct _sz_v sz_v;
+		struct _int_v int_v;
+	};
+}grid_ini, *pGrid_ini;
 
-struct f_grid_info { //find grid info
+struct f_grid_ini { //find grid info
 	int id;
 
-	f_grid_info(int id) : id(id) {}
-	bool operator () (const grid_info& g) const
+	f_grid_ini(int id) : id(id) {}
+	bool operator () (const grid_ini& g) const
 	{
 		return g.id == id;
 	}
 };
 
 
-typedef struct _grid_option {
-	int id;
-	char item0[20];
-	char item1[20];
-	char item2[20];
-	char item3[20];
-	char item4[20];
-	char item5[20];
-	char item6[20];
-	char item7[20];
-	char item8[20];
-	char item9[20];
+//suport 5 sub item
+struct _sz_item {
+	char i0[ITEM_LEN];
+	char i1[ITEM_LEN];
+	char i2[ITEM_LEN];
+	char i3[ITEM_LEN];
+	char i4[ITEM_LEN];
+};
 
+struct _int_item {
+	int i0;
+	int i1;
+	int i2;
+	int i3;
+	int i4;
+};
+
+typedef struct _grid_option {//sub item
+	int id;
+	union {
+		struct _sz_item sz_item;
+		struct _int_item int_item;
+	};
 }grid_option, *pGrid_option;
 
 
-struct f_grid_option { //find grid option
+struct f_grid_option { //find grid option(sub item)
 	int id;
-
 	f_grid_option(int id) : id(id) {}
 	bool operator () (const grid_option& g) const
 	{
@@ -161,4 +184,5 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButton4();
 	afx_msg void OnBnClickedButton5();
+	afx_msg void OnBnClickedButton6();
 };

@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <vector>
 
+#include <random>
 using namespace std;
 
 #ifdef _DEBUG
@@ -107,6 +108,7 @@ BEGIN_MESSAGE_MAP(CMFCCustomDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CMFCCustomDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON4, &CMFCCustomDlg::OnBnClickedButton4)
 	ON_BN_CLICKED(IDC_BUTTON5, &CMFCCustomDlg::OnBnClickedButton5)
+	ON_BN_CLICKED(IDC_BUTTON6, &CMFCCustomDlg::OnBnClickedButton6)
 END_MESSAGE_MAP()
 
 
@@ -181,7 +183,7 @@ BOOL CMFCCustomDlg::OnInitDialog()
     m_Grid.SetFixedRowSelection(FALSE);
 
 	//R, Set ColumnWidth
-	m_Grid.SetColumnWidth(0, 100);
+	m_Grid.SetColumnWidth(0, 150);
 	m_Grid.SetColumnWidth(1, 350);
     UpdateMenuUI();
 
@@ -578,7 +580,8 @@ void CMFCCustomDlg::OnVirtualMode()
 
 	    m_Grid.SetEditable(m_bEditable);
         //m_Grid.SetAutoSizeStyle();
-
+		//m_Grid.SetItemS
+		//SetItemState(nRow, nCol, GetItemState(nRow, nCol) | GVIS_MODIFIED);
 	    TRY {
 		    m_Grid.SetRowCount(m_nRows);
 		    m_Grid.SetColumnCount(m_nCols);
@@ -607,13 +610,16 @@ void CMFCCustomDlg::OnVirtualMode()
 
 			    if (row < m_nFixRows){
 			    	//R, Skip first Column
-			    	if(col!=0)
-                    	str.Format(_T("Rex Column %d"),col);
+			    	if(col == 0)
+                    	str.Format(_T("Content - Row       "));
+			    	else if(col == 1)
+                    	str.Format(_T("Parameter - Col "));
 			    }
                 else if (col < m_nFixCols) 
-                    str.Format(_T("Rex Row %d"), row);
+                    str.Format(_T("Content - Row %d"), row);
                 else 
-				    str.Format(_T("%d"),row*col);
+				    str.Format(_T("Content %d"),row*col);
+
                 Item.strText = str;
 
 
@@ -846,28 +852,40 @@ void CMFCCustomDlg::OnBnClickedOk()
 }
 
 
-vector<grid_info> vgis;
+vector<grid_ini> vgis;
+vector<grid_option> vgos;
+
 void CMFCCustomDlg::OnBnClickedButton4()
 {
 	// TODO: Add your control notification handler code here
 
-	grid_info gi;
-	::ZeroMemory(&gi, sizeof(grid_info));
+	grid_ini gi;
+	grid_option go;
+	::ZeroMemory(&gi, sizeof(grid_ini));
+	::ZeroMemory(&go, sizeof(grid_option));
 
 	//init data 
-	//vector<grid_info> vgis;
+	//vector<grid_ini> vgis;
 	for (int i = 0; i < 10; i++)
 	{
+		//grid_ini
 		gi.id = i; //id 0~ max
 		sprintf(gi.title, "t_%03d", i);
 		gi.option = 1;
 		vgis.push_back(gi);
+
+		//grid_option
+		go.id = i; 
+		sprintf(go.sz_item.i0, "Item0A_%03d", i);
+		sprintf(go.sz_item.i1, "Item1A_%03d", i);
+		sprintf(go.sz_item.i2, "Item2B_%03d", i);
+		vgos.push_back(go);
 	}
 
-	//find data by id
+	//find option by id
 	gi.id = 2;
-	std::vector< grid_info >::iterator it;
-	it = std::find_if(vgis.begin(), vgis.end(), f_grid_info(gi.id));
+	std::vector< grid_ini >::iterator it;
+	it = std::find_if(vgis.begin(), vgis.end(), f_grid_ini(gi.id));
 
 	if (it != vgis.end()) {
 		//get it
@@ -879,14 +897,25 @@ void CMFCCustomDlg::OnBnClickedButton4()
 		it->option = 77;
 
 		TRACE("after modify data : id = %d, titile  = %s, option = %d\n", it->id, it->title, it->option);
-		TRACE("Find nothing !!\n");
 	}
 
+	//find data by id
+	go.id = 2;
+	std::vector< grid_option >::iterator it_vgos;
+	it_vgos = std::find_if(vgos.begin(), vgos.end(), f_grid_option(go.id));
+
+	if (it_vgos != vgos.end()) {
+		//get it
+		TRACE("find option : id = %d, item0  = %s, item1 = %s\n", it_vgos->id, it_vgos->sz_item.i0, it_vgos->sz_item.i1);
+	}
+	else
+	{
+		TRACE("find option : Nothing\n");
+	}
 
 	//find again
 	gi.id = 2;
-	//std::vector< grid_info >::iterator it;
-	it = std::find_if(vgis.begin(), vgis.end(), f_grid_info(gi.id));
+	it = std::find_if(vgis.begin(), vgis.end(), f_grid_ini(gi.id));
 
 	if (it != vgis.end()) {
 		//get it
@@ -910,7 +939,7 @@ void CMFCCustomDlg::OnBnClickedButton5()
 {
 	// TODO: Add your control notification handler code here
 	CString s = "";
-	std::vector< grid_info >::iterator it;
+	std::vector< grid_ini >::iterator it;
 	for (it = vgis.begin(); it != vgis.end(); it++)
 	{
 		s.Format("%sid = %d, title = %s, value = %d\n",
@@ -920,4 +949,135 @@ void CMFCCustomDlg::OnBnClickedButton5()
 	CEdit* wEdit;
 	wEdit = (CEdit*)GetDlgItem(IDC_STATIC);
 	wEdit->SetWindowText(s); //設定
+}
+
+
+void CMFCCustomDlg::OnBnClickedButton6()
+{
+	// TODO: Add your control notification handler code here
+// TODO: Add your control notification handler code here
+
+	grid_ini gi;
+	grid_option go;
+	::ZeroMemory(&gi, sizeof(grid_ini));
+	::ZeroMemory(&go, sizeof(grid_option));
+
+	//init data 
+	int int_item_base = 9900;
+	for (int i = 0; i < 10; i++)
+	{
+		gi.id = i; //id 0~ max
+		go.id = i;//grid_option id
+		if (i % 2 == 0) {
+			//char part
+			//grid_ini
+			
+			gi.option = 1;
+			gi.type = 1;//char
+			sprintf(gi.title, "t_%03d", i);
+			sprintf(gi.sz_v.v, "szValue_%03d", i);
+
+			//grid_option
+			//go.id = i;
+			sprintf(go.sz_item.i0, "Item0A_%03d", i);
+			sprintf(go.sz_item.i1, "Item1A_%03d", i);
+			sprintf(go.sz_item.i2, "Item2B_%03d", i);
+		}
+		else
+		{
+			//int part
+			gi.option = 0;
+			gi.type = 0;//int 
+			gi.int_v.v = int_item_base + i * 2;
+
+			go.int_item.i0 = int_item_base + i;
+			go.int_item.i1 = int_item_base + i + 1;
+			go.int_item.i2 = int_item_base + i + 2;
+		}
+		vgis.push_back(gi);
+		vgos.push_back(go);
+	}
+	TRACE("INIT DATA DONE\n");
+
+	std::random_device rd;
+	//std::mt19937_64 generator(rd());
+	std::default_random_engine gen = std::default_random_engine(rd());
+	std::uniform_int_distribution<int> dis(0, 9);
+	int iRanSec = dis(gen);
+
+	TRACE("Random = %d\n", iRanSec);
+	//find option by id
+	gi.id = iRanSec;
+	std::vector< grid_ini >::iterator it;
+	it = std::find_if(vgis.begin(), vgis.end(), f_grid_ini(gi.id));
+
+	//find data by id
+	go.id = iRanSec;
+	std::vector< grid_option >::iterator it_vgos;
+	it_vgos = std::find_if(vgos.begin(), vgos.end(), f_grid_option(go.id));
+
+	if (it != vgis.end()) {
+		//get it
+		TRACE("find data : id = %d, titile  = %s, option = %d, type = %d\n", 
+			it->id, it->title, it->option, it->type);
+
+		if (it->type == 1) {
+			//show char
+			TRACE("char Value = %s\n", it->sz_v.v);
+
+			if (it_vgos != vgos.end()) {
+				//get option value 
+				TRACE("find option : id = %d, item0  = %s, item1 = %s, item2 = %s\n", 
+					it_vgos->id, it_vgos->sz_item.i0, it_vgos->sz_item.i1, it_vgos->sz_item.i2);
+			}
+			else
+			{
+				TRACE("X, find option : id = %d\n", go.id);
+			}
+		}
+		else
+		{
+			//show int
+			TRACE("int Value = %d\n", it->int_v.v);
+
+
+			if (it_vgos != vgos.end()) {
+				//get option value 
+				TRACE("find option : id = %d, item0  = %d, item1 = %d, item2 = %d\n",
+					it_vgos->id, it_vgos->int_item.i0, it_vgos->int_item.i1, it_vgos->int_item.i2);
+			}
+			else
+			{
+				TRACE("X, find option : id = %d\n", go.id);
+			}
+		}
+	}
+	else
+	{
+		TRACE("X, find id = %d\n", gi.id);
+	}
+
+
+
+
+
+	////find again
+	//gi.id = 2;
+	//it = std::find_if(vgis.begin(), vgis.end(), f_grid_ini(gi.id));
+
+	//if (it != vgis.end()) {
+	//	//get it
+	//	TRACE("find data : id = %d, titile  = %s, option = %d\n", it->id, it->title, it->option);
+
+	//	//modify data
+	//	it->id = 77;
+	//	sprintf(it->title, "%s", "update77");
+	//	it->option = 77;
+
+	//	TRACE("after modify data : id = %d, titile  = %s, option = %d\n", it->id, it->title, it->option);
+	//}
+	//else
+	//{
+	//	TRACE("Find nothing !!\n");
+	//}
 }

@@ -1380,6 +1380,7 @@ void CGridCtrl::OnHScroll(UINT nSBCode, UINT /*nPos*/, CScrollBar* /*pScrollBar*
 }
 
 // Handle vert scrollbar notifications
+//R, No mouse support right now
 void CGridCtrl::OnVScroll(UINT nSBCode, UINT /*nPos*/, CScrollBar* /*pScrollBar*/)
 {
     EndEditing();
@@ -5576,6 +5577,8 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
     
     if (m_MouseMode == MOUSE_OVER_COL_DIVIDE) // sizing column
     {
+		//R, Disable this func
+		return;
         m_MouseMode = MOUSE_SIZING_COL;
         CPoint start;
         if (!GetCellOrigin(0, m_LeftClickDownCell.col, &start))
@@ -5644,6 +5647,9 @@ void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
     }
     else if (m_MouseMode == MOUSE_OVER_ROW_DIVIDE) // sizing row
     {
+		//R, Disable this funcs
+		return;
+
         m_MouseMode = MOUSE_SIZING_ROW;
         CPoint start;
         if (!GetCellOrigin(m_LeftClickDownCell, &start))
