@@ -5,9 +5,12 @@
 #pragma once
 #include "GridCtrl_src/GridCtrl.h"
 
+
+#define GRID_C0_WIDTH 150
+#define GRID_C1_WIDTH 450
+
 //#define _WIN32_WCE
 #define ITEM_LEN 20
-
 
 struct _sz_v { 
 	char v[ITEM_LEN];//value

@@ -1291,6 +1291,7 @@ void CGridCtrl::OnHScroll(UINT nSBCode, UINT /*nPos*/, CScrollBar* /*pScrollBar*
             if (GetScrollPos32(SB_HORZ) == scrollPos)
                 break;          // didn't work
 
+			TRACE("left = %d\n", rect.left);
             rect.left = GetFixedColumnWidth();
             //rect.left = GetFixedColumnWidth() + xScroll;
             //ScrollWindow(-xScroll, 0, rect);

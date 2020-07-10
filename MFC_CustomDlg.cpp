@@ -183,8 +183,8 @@ BOOL CMFCCustomDlg::OnInitDialog()
     m_Grid.SetFixedRowSelection(FALSE);
 
 	//R, Set ColumnWidth
-	m_Grid.SetColumnWidth(0, 150);
-	m_Grid.SetColumnWidth(1, 350);
+	m_Grid.SetColumnWidth(0, GRID_C0_WIDTH);
+	m_Grid.SetColumnWidth(1, GRID_C1_WIDTH);
     UpdateMenuUI();
 
     //m_Grid.AutoSize();
@@ -618,7 +618,7 @@ void CMFCCustomDlg::OnVirtualMode()
                 else if (col < m_nFixCols) 
                     str.Format(_T("Content - Row %d"), row);
                 else 
-				    str.Format(_T("Content %d"),row*col);
+				    str.Format(_T("Content1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9  10 11 12 13 14 15 16 %d"),row*col);
 
                 Item.strText = str;
 
@@ -955,7 +955,7 @@ void CMFCCustomDlg::OnBnClickedButton5()
 void CMFCCustomDlg::OnBnClickedButton6()
 {
 	// TODO: Add your control notification handler code here
-// TODO: Add your control notification handler code here
+
 
 	grid_ini gi;
 	grid_option go;
