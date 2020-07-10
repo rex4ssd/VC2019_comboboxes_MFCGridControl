@@ -8,7 +8,7 @@
 
 #define GRID_C0_WIDTH 150
 #define GRID_C1_WIDTH 450
-
+#define ITEM_LIMIT 50
 //#define _WIN32_WCE
 #define ITEM_LEN 20
 
@@ -85,6 +85,7 @@ class CMFCCustomDlg : public CDialogEx
 public:
 	CMFCCustomDlg(CWnd* pParent = nullptr);	// standard constructor
 
+
 	CStatic	m_GridRect;
 	int		m_nFixCols;
 	int		m_nFixRows;
@@ -123,6 +124,10 @@ public:
 	static BOOL CALLBACK GridCallback(GV_DISPINFO* pDispInfo, LPARAM lParam);
 	void OnGridLines();
 	void UpdateMenuUI();
+	void create_Ini_Data();
+	void InitGrid(int rowCount = 10);
+
+private:
 
 // Implementation
 protected:
