@@ -149,8 +149,8 @@ BOOL CMFCCustomDlg::OnInitDialog()
 	GetClientRect(rect);
 	m_OldSize = CSize(rect.Width(), rect.Height());
 
-	m_ImageList.Create(MAKEINTRESOURCE(IDB_IMAGES), 16, 1, RGB(255,255,255));
-	m_Grid.SetImageList(&m_ImageList);
+	// m_ImageList.Create(MAKEINTRESOURCE(IDB_IMAGES), 16, 1, RGB(255,255,255));
+	// m_Grid.SetImageList(&m_ImageList);
 
 	m_Grid.EnableDragAndDrop(FALSE);
 	m_Grid.GetDefaultCell(TRUE, TRUE)->SetBackClr(RGB(0xFF, 0xFF, 0xE0));

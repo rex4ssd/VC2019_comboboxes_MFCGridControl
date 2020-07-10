@@ -124,7 +124,7 @@ public:
 // Implementation
 protected:
 	HICON m_hIcon;
-	CImageList m_ImageList;
+	// CImageList m_ImageList;
 
 	// Generated message map functions
 	virtual BOOL OnInitDialog();
