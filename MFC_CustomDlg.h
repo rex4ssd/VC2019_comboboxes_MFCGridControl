@@ -7,7 +7,7 @@
 
 
 #define GRID_C0_WIDTH 150
-#define GRID_C1_WIDTH 450
+#define GRID_C1_WIDTH 250
 #define ITEM_LIMIT 50
 //#define _WIN32_WCE
 #define ITEM_LEN 20
@@ -126,7 +126,7 @@ public:
 	void UpdateMenuUI();
 	void create_Ini_Data();
 	void InitGrid(int rowCount = 10);
-
+	void gridSetCombo(int row, char* value, CStringArray &op);
 private:
 
 // Implementation
@@ -168,6 +168,7 @@ protected:
 	afx_msg void OnFill();
 	afx_msg void OnCellUrl();
 	afx_msg void OnCellNormal();
+	afx_msg void OnCellNormal(int row);
 	afx_msg void OnCellCombo();
 	afx_msg void OnCellReadonly();
 	afx_msg void OnTrackfocus();
@@ -193,4 +194,5 @@ public:
 	afx_msg void OnBnClickedButton4();
 	afx_msg void OnBnClickedButton5();
 	afx_msg void OnBnClickedButton6();
+	afx_msg void OnBnClickedButton7();
 };

@@ -112,6 +112,7 @@ BEGIN_MESSAGE_MAP(CMFCCustomDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON4, &CMFCCustomDlg::OnBnClickedButton4)
 	ON_BN_CLICKED(IDC_BUTTON5, &CMFCCustomDlg::OnBnClickedButton5)
 	ON_BN_CLICKED(IDC_BUTTON6, &CMFCCustomDlg::OnBnClickedButton6)
+	ON_BN_CLICKED(IDC_BUTTON7, &CMFCCustomDlg::OnBnClickedButton7)
 END_MESSAGE_MAP()
 
 
@@ -460,12 +461,21 @@ void CMFCCustomDlg::OnCellNormal()
     m_Grid.SetItemText(1,1, _T("1"));
     m_Grid.SetItemState(1,1, m_Grid.GetItemState(1,1) & ~GVIS_READONLY);
     m_Grid.Invalidate();
+}
+
+void CMFCCustomDlg::OnCellNormal(int row)
+{
+	m_Grid.SetCellType(row, 1, RUNTIME_CLASS(CGridCell));
+	//m_Grid.SetItemText(1, 1, _T("1"));
+	m_Grid.SetItemState(row, 1, m_Grid.GetItemState(1, 1) & ~GVIS_READONLY);
+	m_Grid.Invalidate();
 
 	//m_Grid.SetCellType(1, 3, RUNTIME_CLASS(CGridCell));
 	//m_Grid.SetItemText(1, 3, _T("3"));
 	//m_Grid.SetItemState(1, 3, m_Grid.GetItemState(1, 3) & ~GVIS_READONLY);
 	//m_Grid.Invalidate();
 }
+
 
 void CMFCCustomDlg::OnCellReadonly() 
 {
@@ -576,7 +586,9 @@ void CMFCCustomDlg::InitGrid(int rowCount)
 
 	grid_ini gi;
 	grid_option go;
-	CString str0, str1;
+	int OptionType = 0;
+	CString str0;	//title
+	CString str1;	//value
 
 	GV_ITEM Item0;
 	GV_ITEM Item1;
@@ -584,83 +596,110 @@ void CMFCCustomDlg::InitGrid(int rowCount)
     // fill rows/cols with text
     for (int row = 0; row < m_Grid.GetRowCount(); row++)
     {
-    	// for (int col = 0; col < m_Grid.GetColumnCount(); col++)
-	    // { 
+		Item0.mask = GVIF_TEXT;
+		Item0.row = row;
+    	Item0.col = 0;
 
-			Item0.mask = GVIF_TEXT;
-    		Item0.row = row;
-	    	Item0.col = 0;
+		Item1.mask = GVIF_TEXT;
+		Item1.row = row;
+    	Item1.col = 1;	    	
 
-			Item1.mask = GVIF_TEXT;
-    		Item1.row = row;
-	    	Item1.col = 1;	    	
+	    if (row == 0){
+        	str0.Format(_T("- Content -       "));
+        	str1.Format(_T(" - Parameter - "));
+	    }
+		else
+		{
+			gi.id = row;
+			go.id = row;
+			std::vector< grid_ini >::iterator it;
+			it = std::find_if(vgis.begin(), vgis.end(), f_grid_ini(gi.id));
+			
+			if (it != vgis.end()) {
+				//get it
+				TRACE("find data : id = %d, titile  = %s, option = %d, type = %d\n",
+					it->id, it->title, it->option, it->type);
 
-		    if (row == 0){
-		    	//R, Skip first Column
-		    	// if(col == 0)
-                	str0.Format(_T("- Content -       "));
-		    	// else if(col == 1)
-                	str1.Format(_T(" - Parameter - "));
-		    }
-			else
-			{
-				gi.id = row;
-				go.id = row;
-				std::vector< grid_ini >::iterator it;
-				it = std::find_if(vgis.begin(), vgis.end(), f_grid_ini(gi.id));
-				
-				if (it != vgis.end()) {
-					//get it
-					TRACE("find data : id = %d, titile  = %s, option = %d, type = %d\n",
-						it->id, it->title, it->option, it->type);
+				OptionType = it->type;
+				str0.Format(_T("%s"), it->title);
 
-					str0.Format(_T("%s"), it->title);
+				//default value
+				if (it->type == 0) {
+					//show char
+					TRACE("char Value = %s\n", it->sz_v.v);
+					str1.Format(_T("%s"), it->sz_v.v);
+					//if (it_vgos != vgos.end()) {
+					//	//get option value 
+					//	TRACE("find option : id = %d, item0  = %s, item1 = %s, item2 = %s\n",
+					//		it_vgos->id, it_vgos->sz_item.i0, it_vgos->sz_item.i1, it_vgos->sz_item.i2);
+					//}
+					//else TRACE("X, find option : id = %d\n", go.id);
 
-					if (it->type == 1) {
-						//show char
-						TRACE("char Value = %s\n", it->sz_v.v);
-						str1.Format(_T("%s"), it->sz_v.v);
-						//if (it_vgos != vgos.end()) {
-						//	//get option value 
-						//	TRACE("find option : id = %d, item0  = %s, item1 = %s, item2 = %s\n",
-						//		it_vgos->id, it_vgos->sz_item.i0, it_vgos->sz_item.i1, it_vgos->sz_item.i2);
-						//}
-						//else TRACE("X, find option : id = %d\n", go.id);
+				}
+				else
+				{
+					//show int
+					TRACE("int Value = %d\n", it->int_v.v);
+					str1.Format(_T("%d"), it->int_v.v);
+					//if (it_vgos != vgos.end()) {
+					//	//get option value 
+					//	TRACE("find option : id = %d, item0  = %d, item1 = %d, item2 = %d\n",
+					//		it_vgos->id, it_vgos->int_item.i0, it_vgos->int_item.i1, it_vgos->int_item.i2);
+					//}
+					//else TRACE("X, find option : id = %d\n", go.id);
+				}
+
+
+				//find sub item
+				if (it->option == 1)
+				{
+					std::vector< grid_option >::iterator it_vgos;
+					it_vgos = std::find_if(vgos.begin(), vgos.end(), f_grid_option(go.id));				
+					
+					//get all option
+					CStringArray op;
+					char szOption[ITEM_LEN];
+					::memset(szOption, 0, ITEM_LEN);
+					if (OptionType == 0) {
+						::sprintf(szOption, "%s", it_vgos->sz_item.i0);
+						op.Add(szOption);
+						::sprintf(szOption, "%s", it_vgos->sz_item.i1);
+						op.Add(szOption);
+
+						::sprintf(szOption, "%s", it_vgos->sz_item.i2);
+						op.Add(szOption);
+						::sprintf(szOption, "%s", it_vgos->sz_item.i3);
+						op.Add(szOption);
 
 					}
 					else
 					{
-						//show int
-						TRACE("int Value = %d\n", it->int_v.v);
-						str1.Format(_T("%d"), it->int_v.v);
-						//if (it_vgos != vgos.end()) {
-						//	//get option value 
-						//	TRACE("find option : id = %d, item0  = %d, item1 = %d, item2 = %d\n",
-						//		it_vgos->id, it_vgos->int_item.i0, it_vgos->int_item.i1, it_vgos->int_item.i2);
-						//}
-						//else TRACE("X, find option : id = %d\n", go.id);
+						::sprintf(szOption, "%d", it_vgos->int_item.i0);
+						op.Add(szOption);
+						::sprintf(szOption, "%d", it_vgos->int_item.i1);
+						op.Add(szOption);
+						::sprintf(szOption, "%d", it_vgos->int_item.i2);
+						op.Add(szOption);
+						::sprintf(szOption, "%d", it_vgos->int_item.i3);
+						op.Add(szOption);
 					}
-				}
-				else TRACE("X, find id = %d\n", gi.id);		
-			}// end of if
-       //     else if (col < m_nFixCols) 
-       //         str.Format(_T("Content - Row %d"), row);
-       //     else 
-			    //str.Format(_T("Content1 2 3 4 5 6 7 8 9 1 2 3 4 5 6 7 8 9  10 11 12 13 14 15 16 %d"),row*col);
-			//Item0.iImage = 1;
-            Item0.strText = str0;
-    		m_Grid.SetItem(&Item0);
+					//start from here Rex
+					char z[] = "ABC";
+					gridSetCombo(row, z, op);
+				}//end of if
 
-		//	Item1.iImage = 1;
-            Item1.strText = str1;
-    		m_Grid.SetItem(&Item1);    		
-    	// }
+			}
+			else TRACE("X, find id = %d\n", gi.id);		
+		}// end of if
 
-    }	
+        Item0.strText = str0;
+		m_Grid.SetItem(&Item0);
 
-   // UpdateMenuUI();
+        Item1.strText = str1;
+        m_Grid.SetItem(&Item1);
+    }//end of for
+
     m_Grid.GetDefaultCell(TRUE, TRUE)->SetFormat(DT_RIGHT|DT_VCENTER|DT_SINGLELINE|DT_NOPREFIX|DT_END_ELLIPSIS);
-	//m_Grid.AutoSize();
     UpdateData(FALSE);    
 }
 void CMFCCustomDlg::OnVirtualMode() 
@@ -937,6 +976,21 @@ void CMFCCustomDlg::OnBnClickedButton1()
 	TRACE("pCell->GetText() = %s\n", pCell->GetText());
 }
 
+void CMFCCustomDlg::gridSetCombo(int row, char *value, CStringArray& op)
+{
+	OnCellNormal(row);
+
+	if (!m_Grid.SetCellType(row, 1, RUNTIME_CLASS(CGridCellCombo)))
+		return;
+
+	//default value 
+	//m_Grid.SetItemText(row, 1, (LPCTSTR)value);
+
+	//insert option
+	CGridCellCombo* pCell = (CGridCellCombo*)m_Grid.GetCell(1, 1);
+	pCell = (CGridCellCombo*)m_Grid.GetCell(row, 1);
+	pCell->SetOptions(op);
+}
 
 //------------------------------------------------------------------------------------------------------
 void CMFCCustomDlg::OnBnClickedButton2()
@@ -1172,21 +1226,22 @@ void CMFCCustomDlg::create_Ini_Data()
 			//grid_ini
 
 			gi.option = 1;
-			gi.type = 1;//char
-			sprintf(gi.title, "t_%03d", i);
+			gi.type = 0;//char
+			sprintf(gi.title, "char_%03d", i);
 			sprintf(gi.sz_v.v, "szValue_%03d", i);
 
 			//grid_option
 			//go.id = i;
-			sprintf(go.sz_item.i0, "Item0A_%03d", i);
-			sprintf(go.sz_item.i1, "Item1A_%03d", i);
-			sprintf(go.sz_item.i2, "Item2B_%03d", i);
+			sprintf(go.sz_item.i0, "szItem0A_%03d", i);
+			sprintf(go.sz_item.i1, "szItem1A_%03d", i);
+			sprintf(go.sz_item.i2, "szItem2B_%03d", i);
 		}
 		else if (i % 3 == 0)
 		{
 			//int part
 			gi.option = 1;
-			gi.type = 0;//int 
+			gi.type = 1;//int 
+			sprintf(gi.title, "int_%03d", i);
 			gi.int_v.v = int_item_base + i * 2;
 
 			go.int_item.i0 = int_item_base + i;
@@ -1196,23 +1251,15 @@ void CMFCCustomDlg::create_Ini_Data()
 		else {
 			//char part and no subItem
 			gi.option = 0; //no sub item
-			gi.type = 1;//char
-			sprintf(gi.title, "t_%03d", i);
+			gi.type = 0;//char
+			sprintf(gi.title, "charII_%03d", i);
 			sprintf(gi.sz_v.v, "szValue_%03d", i);
-
-			//grid_option
-			//go.id = i;
-			//sprintf(go.sz_item.i0, "Item0A_%03d", i);
-			//sprintf(go.sz_item.i1, "Item1A_%03d", i);
-			//sprintf(go.sz_item.i2, "Item2B_%03d", i);
 		}
 
 		vgis.push_back(gi);
 		vgos.push_back(go);
 	}
 	TRACE("INIT DATA DONE\n");
-
-
 }
 
 void CMFCCustomDlg::OnBnClickedButton6()
@@ -1221,4 +1268,18 @@ void CMFCCustomDlg::OnBnClickedButton6()
 	create_Ini_Data();
 
 	random_find_data();
+}
+
+
+void CMFCCustomDlg::OnBnClickedButton7()
+{
+	// TODO: Add your control notification handler code here
+	char sz[] = "ABC";
+
+	CStringArray op;
+	op.Add(_T("Option 1"));
+	op.Add(_T("Option 2"));
+	op.Add(_T("Option 3"));
+
+	gridSetCombo(3, sz, op);
 }
