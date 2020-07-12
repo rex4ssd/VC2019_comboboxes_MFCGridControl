@@ -162,7 +162,10 @@ BOOL CMFCCustomDlg::OnInitDialog()
 	m_Grid.GetDefaultCell(TRUE, TRUE)->SetBackClr(RGB(0xFF, 0xFF, 0xE0));
 
     OnEditable();
-    OnVirtualMode();    // Sets the grid mode, fills the grid
+
+    InitGrid(50);
+    //OnVirtualMode();    // Sets the grid mode, fills the grid
+
 	OnListmode();
     //OnCellReadonly();
     //OnItalics();
@@ -552,7 +555,36 @@ void CMFCCustomDlg::OnCallbackFunction()
     UpdateMenuUI();
 }
 
+//.............................................................
+void CMFCCustomDlg::GetAllItems(IN grid_option& go, IN int type, OUT CStringArray& op)
+{
+	std::vector< grid_option >::iterator it_vgos;
+	it_vgos = std::find_if(vgos.begin(), vgos.end(), f_grid_option(go.id));
 
+	char szOption[ITEM_LEN];
+	::memset(szOption, 0, ITEM_LEN);
+
+	for (int i = 0 ; i < ITEMS_LIMIT; i++)
+	{
+		::memset(szOption, 0, ITEM_LEN);
+		if (0 == type)	//char
+		{
+			::sprintf(szOption, "%s", it_vgos->sz_item[i].i);
+			
+		}
+		else {			//int 
+			::sprintf(szOption, "%d", it_vgos->int_item[i].i);
+		}
+
+		//if empty, exit
+		if (strlen(szOption) > 0)
+			op.Add(szOption);
+		else break;
+			
+	}
+}
+
+//.............................................................
 void CMFCCustomDlg::InitGrid(int rowCount)
 {
 	UpdateData();
@@ -593,6 +625,7 @@ void CMFCCustomDlg::InitGrid(int rowCount)
 	GV_ITEM Item0;
 	GV_ITEM Item1;
 
+	
     // fill rows/cols with text
     for (int row = 0; row < m_Grid.GetRowCount(); row++)
     {
@@ -653,37 +686,15 @@ void CMFCCustomDlg::InitGrid(int rowCount)
 				//find sub item
 				if (it->option == 1)
 				{
-					std::vector< grid_option >::iterator it_vgos;
-					it_vgos = std::find_if(vgos.begin(), vgos.end(), f_grid_option(go.id));				
+					//std::vector< grid_option >::iterator it_vgos;
+					//it_vgos = std::find_if(vgos.begin(), vgos.end(), f_grid_option(go.id));				
 					
 					//get all option
 					CStringArray op;
 					char szOption[ITEM_LEN];
 					::memset(szOption, 0, ITEM_LEN);
-					if (OptionType == 0) {
-						::sprintf(szOption, "%s", it_vgos->sz_item.i0);
-						op.Add(szOption);
-						::sprintf(szOption, "%s", it_vgos->sz_item.i1);
-						op.Add(szOption);
-
-						::sprintf(szOption, "%s", it_vgos->sz_item.i2);
-						op.Add(szOption);
-						::sprintf(szOption, "%s", it_vgos->sz_item.i3);
-						op.Add(szOption);
-
-					}
-					else
-					{
-						::sprintf(szOption, "%d", it_vgos->int_item.i0);
-						op.Add(szOption);
-						::sprintf(szOption, "%d", it_vgos->int_item.i1);
-						op.Add(szOption);
-						::sprintf(szOption, "%d", it_vgos->int_item.i2);
-						op.Add(szOption);
-						::sprintf(szOption, "%d", it_vgos->int_item.i3);
-						op.Add(szOption);
-					}
 					//start from here Rex
+					GetAllItems(go, OptionType, op);
 					char z[] = "ABC";
 					gridSetCombo(row, z, op);
 				}//end of if
@@ -702,10 +713,10 @@ void CMFCCustomDlg::InitGrid(int rowCount)
     m_Grid.GetDefaultCell(TRUE, TRUE)->SetFormat(DT_RIGHT|DT_VCENTER|DT_SINGLELINE|DT_NOPREFIX|DT_END_ELLIPSIS);
     UpdateData(FALSE);    
 }
+
+//.............................................................
 void CMFCCustomDlg::OnVirtualMode() 
 {
-	InitGrid(50);
-	return;
     UpdateData();
 
     m_bVirtualMode = !m_bVirtualMode;
@@ -1055,9 +1066,9 @@ void CMFCCustomDlg::OnBnClickedButton4()
 
 		//grid_option
 		go.id = i; 
-		sprintf(go.sz_item.i0, "Item0A_%03d", i);
-		sprintf(go.sz_item.i1, "Item1A_%03d", i);
-		sprintf(go.sz_item.i2, "Item2B_%03d", i);
+		sprintf(go.sz_item[0].i, "Item0A_%03d", i);
+		sprintf(go.sz_item[1].i, "Item1A_%03d", i);
+		sprintf(go.sz_item[2].i, "Item2B_%03d", i);
 		vgos.push_back(go);
 	}
 
@@ -1085,7 +1096,7 @@ void CMFCCustomDlg::OnBnClickedButton4()
 
 	if (it_vgos != vgos.end()) {
 		//get it
-		TRACE("find option : id = %d, item0  = %s, item1 = %s\n", it_vgos->id, it_vgos->sz_item.i0, it_vgos->sz_item.i1);
+		TRACE("find option : id = %d, item0  = %s, item1 = %s\n", it_vgos->id, it_vgos->sz_item[0].i, it_vgos->sz_item[1].i);
 	}
 	else
 	{
@@ -1117,8 +1128,6 @@ void CMFCCustomDlg::OnBnClickedButton4()
 void CMFCCustomDlg::OnBnClickedButton5()
 {
 	// TODO: Add your control notification handler code here
-
-
 	TRACE("Size = %d\n", vgis.size());
 	//show all vector content
 	CString s = "";
@@ -1132,10 +1141,6 @@ void CMFCCustomDlg::OnBnClickedButton5()
 	CEdit* wEdit;
 	wEdit = (CEdit*)GetDlgItem(IDC_STATIC);
 	wEdit->SetWindowText(s); //設定
-
-
-
-
 }
 
 //---------------------------------------------------------------------------------------
@@ -1175,7 +1180,7 @@ void random_find_data()
 			if (it_vgos != vgos.end()) {
 				//get option value 
 				TRACE("find option : id = %d, item0  = %s, item1 = %s, item2 = %s\n",
-					it_vgos->id, it_vgos->sz_item.i0, it_vgos->sz_item.i1, it_vgos->sz_item.i2);
+					it_vgos->id, it_vgos->sz_item[0].i, it_vgos->sz_item[1].i, it_vgos->sz_item[2].i);
 			}
 			else
 			{
@@ -1191,7 +1196,7 @@ void random_find_data()
 			if (it_vgos != vgos.end()) {
 				//get option value 
 				TRACE("find option : id = %d, item0  = %d, item1 = %d, item2 = %d\n",
-					it_vgos->id, it_vgos->int_item.i0, it_vgos->int_item.i1, it_vgos->int_item.i2);
+					it_vgos->id, it_vgos->int_item[0].i, it_vgos->int_item[1].i, it_vgos->int_item[2].i);
 			}
 			else
 			{
@@ -1203,7 +1208,6 @@ void random_find_data()
 	{
 		TRACE("X, find id = %d\n", gi.id);
 	}
-
 }
 
 
@@ -1212,13 +1216,17 @@ void CMFCCustomDlg::create_Ini_Data()
 {
 	grid_ini gi;
 	grid_option go;
-	::ZeroMemory(&gi, sizeof(grid_ini));
-	::ZeroMemory(&go, sizeof(grid_option));
 
+
+	vgis.clear();
+	vgos.clear();
 	//init data 
 	int int_item_base = 9900;
 	for (int i = 0; i < ITEM_LIMIT; i++)
 	{
+		::ZeroMemory(&gi, sizeof(grid_ini));
+		::ZeroMemory(&go, sizeof(grid_option));
+
 		gi.id = i; //id 0~ max
 		go.id = i;//grid_option id
 		if (i % 2 == 0) {
@@ -1232,9 +1240,9 @@ void CMFCCustomDlg::create_Ini_Data()
 
 			//grid_option
 			//go.id = i;
-			sprintf(go.sz_item.i0, "szItem0A_%03d", i);
-			sprintf(go.sz_item.i1, "szItem1A_%03d", i);
-			sprintf(go.sz_item.i2, "szItem2B_%03d", i);
+			sprintf(go.sz_item[0].i, "szItem0A_%03d", i);
+			sprintf(go.sz_item[1].i, "szItem1A_%03d", i);
+			sprintf(go.sz_item[2].i, "szItem2B_%03d", i);
 		}
 		else if (i % 3 == 0)
 		{
@@ -1244,9 +1252,9 @@ void CMFCCustomDlg::create_Ini_Data()
 			sprintf(gi.title, "int_%03d", i);
 			gi.int_v.v = int_item_base + i * 2;
 
-			go.int_item.i0 = int_item_base + i;
-			go.int_item.i1 = int_item_base + i + 1;
-			go.int_item.i2 = int_item_base + i + 2;
+			go.int_item[0].i = int_item_base + i;
+			go.int_item[1].i = int_item_base + i + 1;
+			go.int_item[2].i = int_item_base + i + 2;
 		}
 		else {
 			//char part and no subItem

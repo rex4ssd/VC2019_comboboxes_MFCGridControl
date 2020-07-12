@@ -6,18 +6,18 @@
 #include "GridCtrl_src/GridCtrl.h"
 
 
-#define GRID_C0_WIDTH 150
-#define GRID_C1_WIDTH 250
-#define ITEM_LIMIT 50
-//#define _WIN32_WCE
-#define ITEM_LEN 20
+#define GRID_C0_WIDTH	150
+#define GRID_C1_WIDTH	250
+#define ITEM_LIMIT		50
+#define ITEM_LEN		20
+#define ITEMS_LIMIT		10
 
 struct _sz_v { 
 	char v[ITEM_LEN];//value
 };
 
-struct _int_v { //value
-	int v;//value 
+struct _int_v { 
+	int v;			//value 
 };
 
 typedef struct _grid_ini {
@@ -29,6 +29,7 @@ typedef struct _grid_ini {
 		struct _sz_v sz_v;
 		struct _int_v int_v;
 	};
+	char d[ITEM_LEN];//description
 }grid_ini, *pGrid_ini;
 
 struct f_grid_ini { //find grid info
@@ -41,29 +42,20 @@ struct f_grid_ini { //find grid info
 	}
 };
 
-
-//suport 5 sub item
+//suport ITEM_LEN sub item
 struct _sz_item {
-	char i0[ITEM_LEN];
-	char i1[ITEM_LEN];
-	char i2[ITEM_LEN];
-	char i3[ITEM_LEN];
-	char i4[ITEM_LEN];
+	char i[ITEM_LEN];
 };
 
 struct _int_item {
-	int i0;
-	int i1;
-	int i2;
-	int i3;
-	int i4;
+	int i;
 };
 
 typedef struct _grid_option {//sub item
 	int id;
 	union {
-		struct _sz_item sz_item;
-		struct _int_item int_item;
+		struct _sz_item sz_item[ITEMS_LIMIT];
+		struct _int_item int_item[ITEMS_LIMIT];
 	};
 }grid_option, *pGrid_option;
 
@@ -116,7 +108,7 @@ public:
 	enum { IDD = IDD_MFC_CUSTOM_DIALOG };
 #endif
 
-        virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG* pMsg);
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 	virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
@@ -127,6 +119,7 @@ public:
 	void create_Ini_Data();
 	void InitGrid(int rowCount = 10);
 	void gridSetCombo(int row, char* value, CStringArray &op);
+	void GetAllItems(IN grid_option& go, IN int type, OUT CStringArray& op);
 private:
 
 // Implementation
