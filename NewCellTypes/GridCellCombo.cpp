@@ -168,7 +168,7 @@ CInPlaceList::CInPlaceList(CWnd* pParent, CRect& rect, DWORD dwStyle, UINT nID,
 
 	// Create the combobox
  	DWORD dwComboStyle = WS_BORDER|WS_CHILD|WS_VISIBLE|WS_VSCROLL|
- 					     CBS_AUTOHSCROLL | dwStyle;
+ 					     CBS_AUTOHSCROLL | ES_READONLY | dwStyle;
 	int nHeight = rect.Height();
 	rect.bottom = rect.bottom + m_nNumLines*nHeight + ::GetSystemMetrics(SM_CYHSCROLL);
 	if (!Create(dwComboStyle, rect, pParent, nID)) return;
@@ -202,6 +202,7 @@ CInPlaceList::CInPlaceList(CWnd* pParent, CRect& rect, DWORD dwStyle, UINT nID,
     if ((dwStyle & CBS_DROPDOWNLIST) != CBS_DROPDOWNLIST)
     {
         m_edit.SubclassDlgItem(IDC_COMBOEDIT, this);
+		m_edit.SetReadOnly();
  	    SetFocus();
         switch (nFirstChar)
         {

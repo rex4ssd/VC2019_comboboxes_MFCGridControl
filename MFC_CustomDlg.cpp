@@ -470,13 +470,10 @@ void CMFCCustomDlg::OnCellNormal(int row)
 {
 	m_Grid.SetCellType(row, 1, RUNTIME_CLASS(CGridCell));
 	//m_Grid.SetItemText(1, 1, _T("1"));
-	m_Grid.SetItemState(row, 1, m_Grid.GetItemState(1, 1) & ~GVIS_READONLY);
-	m_Grid.Invalidate();
+	m_Grid.SetItemState(row, 1, m_Grid.GetItemState(row, 1) & ~GVIS_READONLY);
 
-	//m_Grid.SetCellType(1, 3, RUNTIME_CLASS(CGridCell));
-	//m_Grid.SetItemText(1, 3, _T("3"));
-	//m_Grid.SetItemState(1, 3, m_Grid.GetItemState(1, 3) & ~GVIS_READONLY);
-	//m_Grid.Invalidate();
+	//m_Grid.SetItemState(1,1, m_Grid.GetItemState(1,1) | GVIS_READONLY);
+	m_Grid.Invalidate();
 }
 
 
@@ -998,7 +995,7 @@ void CMFCCustomDlg::gridSetCombo(int row, char *value, CStringArray& op)
 	//m_Grid.SetItemText(row, 1, (LPCTSTR)value);
 
 	//insert option
-	CGridCellCombo* pCell = (CGridCellCombo*)m_Grid.GetCell(1, 1);
+	CGridCellCombo* pCell = (CGridCellCombo*)m_Grid.GetCell(row, 1);
 	pCell = (CGridCellCombo*)m_Grid.GetCell(row, 1);
 	pCell->SetOptions(op);
 }
