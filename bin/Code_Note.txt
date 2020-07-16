@@ -1,0 +1,184 @@
+code from :
+
+7 May 2010  - MFC Grid control 2.27
+https://www.codeproject.com/Articles/8/MFC-Grid-control-2-27
+
+
+9 Jan 2013 Using comboboxes in the MFC Grid Control
+https://www.codeproject.com/Articles/500/Using-comboboxes-in-the-MFC-Grid-Control
+
+
+................................
+update Event, how to save 
+edit?
+dropdown ? 
+
+set edit box Width 
+
+
+void CMFCCustomDlg::OnCellNormal() 
+{
+    m_Grid.SetCellType(1,1, RUNTIME_CLASS(CGridCell));
+    m_Grid.SetItemText(1,1, _T("1"));
+    m_Grid.SetItemState(1,1, m_Grid.GetItemState(1,1) & ~GVIS_READONLY);
+    m_Grid.Invalidate();
+
+	m_Grid.SetCellType(1, 3, RUNTIME_CLASS(CGridCell));
+	m_Grid.SetItemText(1, 3, _T("3"));
+	m_Grid.SetItemState(1, 3, m_Grid.GetItemState(1, 3) & ~GVIS_READONLY);
+	m_Grid.Invalidate();
+	
+...................................................................................................
+
+	
+class CInPlaceList : public CComboBox	
+	afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+	afx_msg void OnDropdown();
+	afx_msg UINT OnGetDlgCode();
+	
+	
+	
+..................................................
+class CGridCtrl : public CWnd
+{
+    DECLARE_DYNCREATE(CGridCtrl)
+    friend class CGridCell;
+    friend class CGridCellBase;
+	
+class CGridCell : public CGridCellBase
+class CGridCellCombo : public CGridCell
+class CComboEdit : public CEdit	
+
+
+...............................
+
+m_Grid
+    int  GetColumnWidth(int nCol) const;
+    BOOL SetColumnWidth(int col, int width);
+
+	
+	
+	void CGridCtrl::SetSelectedRange(int nMinRow, int nMinCol, int nMaxRow, int nMaxCol,
+                                 BOOL bForceRepaint /* = FALSE */, BOOL bSelectCells/*=TRUE*/)
+{m
+
+
+
+...............................
+//set color
+void CGridCtrl::SetupDefaultCells()
+m_cellFixedRowDef.SetTextClr(m_crWindowText);
+
+
+.........................
+
+void CGridCtrl::OnLButtonDown
+
+
+
+    m_bMouseButtonDown   = TRUE;
+    m_LeftClickDownPoint = point;
+    m_LeftClickDownCell  = GetCellFromPt(point);
+	
+	
+	
+..............................
+set first column
+BOOL CGridCtrl::SetFixedColumnCount(int nFixedCols)	
+
+
+
+.................................
+void CGridCtrl::OnLButtonDown(UINT nFlags, CPoint point)
+|
+void CGridCellBase::OnClickDown( CPoint PointCellRelative)
+|
+CCellID CGridCtrl::SetFocusCell(int nRow, int nCol)
+CCellID CGridCtrl::SetFocusCell(CCellID cell)
+|
+SetItemState(m_idCurrentCell.row, m_idCurrentCell.col,
+|
+    // Set the cell's state
+    pCell->SetState(state);
+
+	
+	
+......................................
+//no  
+SetVirtualMode 	 = false
+		
+
+// selects cells
+void CGridCtrl::SelectCells(CCellID currentCell, 
+                            BOOL bForceRedraw /*=FALSE*/, BOOL bSelectCells /*=TRUE*/)
+							
+							
+							
+...................................................
+ SetItemText(int nRow, int nCol, LPCTSTR str);
+ 
+ 
+ 
+ .........................................
+ 
+// Cell states
+#define GVIS_FOCUSED            0x0001
+#define GVIS_SELECTED           0x0002
+#define GVIS_DROPHILITED        0x0004
+#define GVIS_READONLY           0x0008
+#define GVIS_FIXED              0x0010
+#define GVIS_FIXEDROW           0x0020
+#define GVIS_FIXEDCOL           0x0040
+#define GVIS_MODIFIED           0x0080
+
+
+
+................................
+void CMFCCustomDlg::OnCellNormal() 
+{
+    m_Grid.SetCellType(1,1, RUNTIME_CLASS(CGridCell));
+    m_Grid.SetItemText(1,1, _T("1"));
+    m_Grid.SetItemState(1,1, m_Grid.GetItemState(1,1) & ~GVIS_READONLY);
+    m_Grid.Invalidate();
+	
+	
+.................................................
+afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar); //REX  
+	
+
+	
+..........................................
+Libra MP
+REMOVE 	DDX_Control(pDX, IDC_LIST_MP_PARAMETER, m_lstMPParam);
+- IDC_LIST_MP_PARAMETER	
+add IDC_GRID	
+
+
+aceGeneral - left = 751, right = 847, cx = 846, cy = 665H
+				ft = 1690, right = 1904, cx = 1902, cy = 1182
+m_Grid.SetColumnWidth(1, 450);	
+
+	//R, Set ColumnWidth
+	m_Grid.SetColumnWidth(0, 150);
+	m_Grid.SetColumnWidth(1, 250);
+	
+	
+	
+	 atlTraceGeneral - ResetAllWindowRect x = 0, y = 1072779065
+	 
+	 
+ atlTraceGeneral - ResetAllWindowRect x = 0, y = 1072779065
+H:\z97x_share\EPO_Code\SVN_branch0708_Git_coding\LibraMPTool\LibraMPTool\Parameter.cpp(505) : atlTraceGeneral - left = 751, right = 847, cx = 846, cy = 665
+H:\z97x_share\EPO_Code\SVN_branch0708_Git_coding\LibraMPTool\LibraMPTool\Parameter.cpp(505) : atlTraceGeneral - left = 751, right = 847, cx = 846, cy = 665
+H:\z97x_share\EPO_Code\SVN_branch0708_Git_coding\LibraMPTool\LibraMPTool\Parameter.cpp(505) : atlTraceGeneral - left = 751, right = 847, cx = 846, cy = 665
+H:\z97x_share\EPO_Code\SVN_branch0708_Git_coding\LibraMPTool\LibraMPTool\Parameter.cpp(505) : atlTraceGeneral - left = 452, right = 507, cx = 846, cy = 665	 
+
+
+ atlTraceGeneral - left = 0, right = 420(r - l = 420), cx = 846, cy = 665
+ atlTraceGeneral - left = 0, right = 946(r - l = 946), cx = 1902, cy = 1182
+ 
+ 
+ 
+ 
+ ect.bottom = rect.bottom + m_nNumLines*nHeight + :
