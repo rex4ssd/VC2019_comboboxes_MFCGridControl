@@ -15,6 +15,9 @@
 #include <vector>
 
 #include <random>
+
+#include "CWlog.h"
+
 using namespace std;
 
 #ifdef _DEBUG
@@ -113,6 +116,7 @@ BEGIN_MESSAGE_MAP(CMFCCustomDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON5, &CMFCCustomDlg::OnBnClickedButton5)
 	ON_BN_CLICKED(IDC_BUTTON6, &CMFCCustomDlg::OnBnClickedButton6)
 	ON_BN_CLICKED(IDC_BUTTON7, &CMFCCustomDlg::OnBnClickedButton7)
+	ON_BN_CLICKED(IDC_BUTTON8, &CMFCCustomDlg::OnBnClickedButton8)
 END_MESSAGE_MAP()
 
 
@@ -1287,4 +1291,57 @@ void CMFCCustomDlg::OnBnClickedButton7()
 	op.Add(_T("Option 3"));
 
 	gridSetCombo(3, sz, op);
+
+
+
+}
+
+
+
+std::string random_string()
+{
+	std::string str("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+	std::random_device rd;
+	std::mt19937 generator(rd());
+
+	std::shuffle(str.begin(), str.end(), generator);
+
+	return str.substr(0, 32);    // assumes 32 < number of characters in str         
+}
+
+void CMFCCustomDlg::OnBnClickedButton8()
+{
+	// TODO: Add your control notification handler code here
+
+	//generate random log string
+	CCWLog cw0;
+	std:string sRan;
+	char szbuff[256];
+	for (UINT i = 0; i < 1024 * 1024 * 1024; i++)
+	{
+		sRan =  random_string();
+		snprintf(szbuff, sizeof(szbuff), "%u - %s", i, sRan.c_str());
+		cw0.WLog(szbuff);
+		//std::string buffAsStdStr = buff;
+	}
+	//...........................................
+	
+	//create With Full path
+	CCWLog cw1("E:\\win7_utility\\TEST.log");
+	cw1.WLog("CW1 a123");
+	std::string s = ("CW1 A123456789 123456789");
+	cw1.WLog(s.c_str()); //input std::string
+
+	//create with current path and default log name(current date)
+	CCWLog cw2;
+	cw2.WLog("cw2 a123");
+	std::string s1 = ("CW2 A123456789 123456789");
+	cw2.WLog((char*)s1.c_str());
+
+	//create with current path and log name = "TEST"
+	CCWLog cw3("TEST.log");
+	cw3.WLog("cw3 12"); //input char
+
+
 }

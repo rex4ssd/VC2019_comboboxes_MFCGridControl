@@ -188,6 +188,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CWLog.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GridCtrl_src\CellRange.h" />
     <ClInclude Include="GridCtrl_src\GridCell.h" />
@@ -206,6 +207,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CWLog.cpp" />
     <ClCompile Include="GridCtrl_src\GridCell.cpp" />
     <ClCompile Include="GridCtrl_src\GridCellBase.cpp" />
     <ClCompile Include="GridCtrl_src\GridCtrl.cpp" />

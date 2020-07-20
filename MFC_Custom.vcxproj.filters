@@ -75,6 +75,9 @@
     <ClInclude Include="NewCellTypes\GridURLCell.h">
       <Filter>Header Files\New Cell Headers</Filter>
     </ClInclude>
+    <ClInclude Include="CWLog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_Custom.cpp">
@@ -109,6 +112,9 @@
     </ClCompile>
     <ClCompile Include="NewCellTypes\GridURLCell.cpp">
       <Filter>Source Files\New Cell Source</Filter>
+    </ClCompile>
+    <ClCompile Include="CWLog.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
